@@ -29,6 +29,7 @@ router.post(
 
     try {
       //see if user exists
+
       let user = await User.findOne({ email });
 
       if (user) {
@@ -38,6 +39,7 @@ router.post(
       }
 
       //get users gravatar
+
       const avatar = gravatar.url(email, {
         s: "200",
         r: "pg",
