@@ -8,7 +8,7 @@ const config = require("config");
 const User = require("../../models/User");
 
 // @route   GET api/auth
-// @desc    Test route
+// @desc    authentication
 // @access  Private
 
 router.get("/", auth, async (req, res) => {
@@ -22,7 +22,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 // @route   POST api/users
-// @desc    Authenticate USer and get token
+// @desc    Authenticate User and get token
 // @access  Public
 
 router.post(

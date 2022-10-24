@@ -8,7 +8,7 @@ const becrypt = require("bcryptjs");
 const User = require("../../models/User");
 
 // @route   POST api/users
-// @desc    Test route
+// @desc    create user
 // @access  Public
 
 router.post(
