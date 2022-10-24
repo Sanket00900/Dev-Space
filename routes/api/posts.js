@@ -4,11 +4,12 @@ const { check, validationResult } = require("express-validator");
 const auth = require("../../middleware/auth");
 const Post = require("../../models/Post");
 const Profile = require("../../models/Profile");
+const { remove } = require("../../models/User");
 const User = require("../../models/User");
 
-// @route   POST api/posts
-// @desc    Create a Post
-// @access  Private
+//? @route   POST api/posts
+//* @desc    Create a Post
+//! @access  Private
 
 router.post(
   "/",
@@ -37,9 +38,9 @@ router.post(
   }
 );
 
-// @route   gett api/posts
-// @desc    Get all Posts
-// @access  Private
+//? @route   gett api/posts
+//* @desc    Get all Posts
+//! @access  Private
 
 router.get("/", auth, async (req, res) => {
   try {
@@ -51,11 +52,11 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// @route   gett api/posts/:id
-// @desc    Get post by id
-// @access  Private
+//? @route   gett api/posts/:id
+//* @desc    Get post by id
+//! @access  Private
 
-router.get("/", auth, async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) {
@@ -68,6 +69,63 @@ router.get("/", auth, async (req, res) => {
     if (error.kind === "ObjectId") {
       return res.status(404).json({ msg: "Post not found" });
     }
+    res.status(500).send("Server Error");
+  }
+});
+
+//? @route   Delete api/posts/:id
+//* @desc    delete post by id
+//! @access  Private
+
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(400).json({ msg: "Post not found" });
+    }
+
+    //?check user
+
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: "User not authorized" });
+    }
+
+    //!delete post
+
+    await post.remove();
+
+    res.json({ msg: "Post removed" });
+  } catch (error) {
+    console.error(error.messege);
+    if (error.kind === "ObjectId") {
+      return res.status(404).json({ msg: "Post not found" });
+    }
+    res.status(500).send("Server Error");
+  }
+});
+
+//* @route   Put api/posts/like/:id
+//? @desc    like a post
+//! @access  Private
+
+router.put("/like/:id", auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    //? check if post has already been liked
+    if (
+      post.likes.filter((like) => like.user.toString() === req.user.id).length >
+      0
+    ) {
+      res.status(400).json({ msg: "Post already liked" });
+    }
+
+    post.likes.unshift({ user: req.user.id });
+    await post.save();
+    res.json(post.likes);
+  } catch (error) {
+    console.error(error.messege);
     res.status(500).send("Server Error");
   }
 });
