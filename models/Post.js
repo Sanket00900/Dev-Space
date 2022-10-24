@@ -3,38 +3,29 @@ const Schema = mongoose.Schema;
 
 const PostSchema = new Schema({
   user: {
-    type: Schema.types.ObjectId,
-    ref: "users",
+    type: Schema.Types.ObjectId,
   },
-
   text: {
     type: String,
     required: true,
   },
-
   name: {
     type: String,
-    required: true,
   },
-
   avatar: {
     type: String,
   },
-
   likes: [
     {
       user: {
-        type: Schema.types.ObjectId,
-        ref: "users",
+        type: Schema.Types.ObjectId,
       },
     },
   ],
-
   comments: [
     {
       user: {
-        type: Schema.types.ObjectId,
-        ref: "users",
+        type: Schema.Types.ObjectId,
       },
       text: {
         type: String,
@@ -42,9 +33,7 @@ const PostSchema = new Schema({
       },
       name: {
         type: String,
-        required: true,
       },
-
       avatar: {
         type: String,
       },
@@ -60,4 +49,4 @@ const PostSchema = new Schema({
   },
 });
 
-module.exports = Post = mongoose.model("Post", PostSchema);
+module.exports = mongoose.model("post", PostSchema);
