@@ -6,6 +6,7 @@ const Post = require("../../models/Post");
 const Profile = require("../../models/Profile");
 const { remove } = require("../../models/User");
 const User = require("../../models/User");
+const checkObjectId = require("../../middleware/checkObjectId");
 
 //? @route   POST api/posts
 //* @desc    Create a Post
@@ -16,7 +17,7 @@ router.post(
   [auth, [check("text", "Text is Required").not().isEmpty()]],
   async (req, res) => {
     const error = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (!error.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -81,14 +82,14 @@ router.delete("/:id", auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
-    if (!post) {
-      return res.status(400).json({ msg: "Post not found" });
-    }
-
     //?check user
 
     if (post.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: "User not authorized" });
+    }
+
+    if (!post) {
+      return res.status(400).json({ msg: "Post not found" });
     }
 
     //!delete post
@@ -109,23 +110,22 @@ router.delete("/:id", auth, async (req, res) => {
 //? @desc    like a post
 //! @access  Private
 
-router.put("/like/:id", auth, async (req, res) => {
+router.put("/like/:id", auth, checkObjectId("id"), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
-    //? check if post has already been liked
-    if (
-      post.likes.filter((like) => like.user.toString() === req.user.id).length >
-      0
-    ) {
-      res.status(400).json({ msg: "Post already liked" });
+    //? Check if the post has already been liked
+    if (post.likes.some((like) => like.user.toString() === req.user.id)) {
+      return res.status(400).json({ msg: "Post already liked" });
     }
 
     post.likes.unshift({ user: req.user.id });
+
     await post.save();
-    res.json(post.likes);
-  } catch (error) {
-    console.error(error.messege);
+
+    return res.json(post.likes);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
