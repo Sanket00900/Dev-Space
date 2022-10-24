@@ -1,7 +1,0 @@
-{
-    "mongoURI":"mongodb://localhost:27017/dev-space",
-    "jwtToken": "mySecretToken",
-    "githubClientId":"b07d77d7f6111df03fbf",
-    "githubSecret":"a8743b7faf68205e30b562a17234cc3247b885b5"
-}
-
