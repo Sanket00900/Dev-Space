@@ -130,4 +130,34 @@ router.put("/like/:id", auth, checkObjectId("id"), async (req, res) => {
   }
 });
 
+//* @route    api/posts/unlike/:id
+//? @desc    unlike a post
+//! @access  Private
+
+router.put("/unlike/:id", auth, checkObjectId("id"), async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    //? Check if the post has already been liked
+    if (post.likes.some((like) => like.user.toString() === req.user.id)) {
+      return res.status(400).json({ msg: "Post has not yet been liked yet" });
+    }
+
+    //* Get remove index
+
+    const removeIndex = post.likes
+      .map((like) => like.user.toString())
+      .indexOf(req.user.id);
+
+    post.likes.splice(removeIndex, 1);
+
+    await post.save();
+
+    return res.json(post.likes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 module.exports = router;
