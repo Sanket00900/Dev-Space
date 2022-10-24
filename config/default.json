@@ -1,6 +1,7 @@
 {
-    "mongoURI": "mongodb+srv://root:root@dev-space.h4b4twy.mongodb.net/?retryWrites=true&w=majority",
+    "mongoURI": "mongodb://root:<password>@dev-space.h4b4twy.mongodb.net/?retryWrites=true&w=majority",
     "jwtToken": "mySecretToken",
     "githubClientId":"b07d77d7f6111df03fbf",
     "githubSecret":"a8743b7faf68205e30b562a17234cc3247b885b5"
 }
+
